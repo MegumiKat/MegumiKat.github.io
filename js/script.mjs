@@ -105,15 +105,21 @@ function loadImage(index) {
 // image deletion
 deleteImageBtn.addEventListener('click', () => {
     const images = getImages();
-    if (images.length > 0) {
+    if (images.length > 1) {
         deleteImage(images[currentImageIndex].imageId);
        if (currentImageIndex > 0) {
             currentImageIndex--;
+            console.log("1      " + currentImageIndex);
         }else if(currentImageIndex === 0){
-            currentImageIndex++;
+            // currentImageIndex++;
+            console.log("2      " + currentImageIndex);
         }
-        loadImage(currentImageIndex);
+        
+    }else if(images.length === 1){
+        deleteImage(images[currentImageIndex].imageId);
     }
+    loadImage(currentImageIndex);
+
 });
 
 // previous and next image navigation
