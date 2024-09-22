@@ -35,7 +35,10 @@ const nextPageBtn = document.getElementById('nextPage');
 
 // Load the current image index from localStorage (if available)
 if (localStorage.getItem('currentImageIndex')) {
+    imageDisplay.style.display = 'flex'; 
     currentImageIndex = parseInt(localStorage.getItem('currentImageIndex'), 10);
+} else {
+    imageDisplay.style.display = 'none'
 }
 
 // Toggle the image form
