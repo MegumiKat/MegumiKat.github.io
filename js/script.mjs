@@ -2,7 +2,7 @@ import { addImage, deleteImage, addComment, deleteComment, getImages, getComment
 
 let currentImageIndex = 0;
 let currentPage = 1;  
-const commentsPerPage = 2; 
+const commentsPerPage = 10; 
 
 
 const imageAdding = document.getElementById('imageAdding');
@@ -53,10 +53,10 @@ submitFormBtn.addEventListener('click', (e) => {
     e.preventDefault();
     const title = document.getElementById('imageTitle').value;
     const author = document.getElementById('imageAuthor').value;
-    const url = document.getElementById('imageUrl').value;
+    const url = document.getElementById('imageUrl').value.trim();
 
     if (!title || !author || !url) {
-        alert('Please fill in all fields before submitting.'); // 提示用户填写所有字段
+        alert('Please fill in all fields before submitting.'); 
         return; 
     }
 
@@ -89,10 +89,10 @@ submitFormBtn.addEventListener('click', (e) => {
 function loadImage(index) {
     const images = getImages();
     if (images.length === 0) {
-        currentImageContainer.classList.add('hidden');
+        document.querySelector('.imageDisplay').style.display = 'none';
         return;
     }
-    currentImageContainer.classList.remove('hidden');
+    document.querySelector('.imageDisplay').style.display = 'flex';
     const image = images[index];
     currentImage.src = image.url;
     currentTitle.textContent = image.title;
@@ -107,14 +107,12 @@ deleteImageBtn.addEventListener('click', () => {
     const images = getImages();
     if (images.length > 0) {
         deleteImage(images[currentImageIndex].imageId);
-        if (currentImageIndex > 0) currentImageIndex--;
-        if (currentImageIndex === 0) {
-            document.querySelector('.imageDisplay').style.display = 'none';
-        } else {
-            document.querySelector('.imageDisplay').style.display = 'flex';
-            loadImage(currentImageIndex);
+       if (currentImageIndex > 0) {
+            currentImageIndex--;
+        }else if(currentImageIndex === 0){
+            currentImageIndex++;
         }
-        
+        loadImage(currentImageIndex);
     }
 });
 
@@ -175,6 +173,7 @@ function loadCommentsForModal(imageId) {
     const start = (currentPage - 1) * commentsPerPage;
     const end = start + commentsPerPage;
     const paginatedComments = comments.slice(start, end);
+    let number = 0;
 
     // Clear the current comment list
     modalCommentsList.innerHTML = '';
@@ -182,6 +181,7 @@ function loadCommentsForModal(imageId) {
     // Display paginated comments
     paginatedComments.forEach(comment => {
         const commentDiv = document.createElement('div');
+        number++;
         commentDiv.classList.add('comment');
         commentDiv.innerHTML = `
             <p><strong>${comment.author}</strong> (${new Date(comment.date).toLocaleString()}):</p>
@@ -196,12 +196,16 @@ function loadCommentsForModal(imageId) {
         button.addEventListener('click', (e) => {
             const commentId = e.target.getAttribute('data-id');
             deleteComment(commentId);
+            number--;
+            if(number === 0){
+                currentPage--;
+            }
             loadCommentsForModal(imageId);
         });
     });
 
     // Update pagination controls
-    paginationControls.style.display = totalPages > 1 ? 'block' : 'none';
+    // paginationControls.style.display = totalPages > 1 ? 'block' : 'none';
     prevPageBtn.disabled = currentPage === 1;
     nextPageBtn.disabled = currentPage === totalPages;
 }
